@@ -1,7 +1,6 @@
 ---
 #
 # This play book allows stackato user to sudo without password
-# and set the password  to {{stackato_password}}
 #
       - hosts: all
         sudo: True

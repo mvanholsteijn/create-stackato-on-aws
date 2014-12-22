@@ -33,7 +33,7 @@
         - name: attach as data-services
           command: kato node attach -e data-services 10.0.3.5
         - name: change stackato password
-          shell: "(echo '{{admin_password}}'; echo '{{admin_password}}' ) | passwd stackato"
+          shell: "(echo '{{admin_password}}'; echo '{{admin_password}}' ) | sudo passwd stackato"
 
       - hosts: deas
         tasks:
@@ -45,7 +45,7 @@
         - name: attach as dea
           command: kato node attach -e dea 10.0.3.5
         - name: change stackato password
-          shell: "(echo '{{admin_password}}'; echo '{{admin_password}}' ) | passwd stackato"
+          shell: "(echo '{{admin_password}}'; echo '{{admin_password}}' ) | sudo passwd stackato"
 
       - hosts: routers
         tasks:
@@ -57,5 +57,5 @@
         - name: attach as router
           command: kato node attach -e router 10.0.3.5
         - name: change stackato password
-          shell: "(echo '{{admin_password}}'; echo '{{admin_password}}' ) | passwd stackato"
+          shell: "(echo '{{admin_password}}'; echo '{{admin_password}}' ) | sudo passwd stackato"
 
