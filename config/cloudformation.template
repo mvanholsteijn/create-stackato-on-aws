@@ -210,20 +210,6 @@
         }
       }
     },
-    "stackatomaygo": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "StackatoVPC"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "stackato-main-route"
-          }
-        ]
-      }
-    },
     "StackatoPublicRouteTable": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
@@ -238,7 +224,7 @@
         ]
       }
     },
-    "StackatoPrivateRouteTable": {
+    "StackatoPrivateRouteTableAZ1": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
@@ -248,6 +234,20 @@
           {
             "Key": "Name",
             "Value": "private-az-1-route-table"
+          }
+        ]
+      }
+    },
+    "StackatoPrivateRouteTableAZ2": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "StackatoVPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "private-az-2-route-table"
           }
         ]
       }
@@ -946,18 +946,7 @@
         }
       }
     },
-    "SubnetRoute1": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "StackatoPublicRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "PublicSubnetAZ2"
-        }
-      }
-    },
-    "SubnetRoute2": {
+    "PublicSubnetRouteTableAZ1Association": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -968,7 +957,40 @@
         }
       }
     },
-    "Route1": {
+    "PrivateSubnetRouteTableAZ1Association": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackatoPrivateRouteTableAZ1"
+        },
+        "SubnetId": {
+          "Ref": "PrivateSubnetAZ1"
+        }
+      }
+    },
+    "PublicSubnetRouteTableAZ2Association": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackatoPublicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnetAZ2"
+        }
+      }
+    },
+    "PrivateSubnetRouteTableAZ2Association": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackatoPrivateRouteTableAZ2"
+        },
+        "SubnetId": {
+          "Ref": "PrivateSubnetAZ2"
+        }
+      }
+    },
+    "RouteToInternetGatewayFromPublicSubnet": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
@@ -981,15 +1003,27 @@
       },
       "DependsOn": "Gateway1"
     },
-    "Route2": {
+    "InternetRouteFromAZ1": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "RouteTableId": {
-          "Ref": "StackatoPrivateRouteTable"
+          "Ref": "StackatoPrivateRouteTableAZ1"
         },
         "InstanceId": {
           "Ref": "NATHostAZ1"
+        }
+      }
+    },
+    "InternetRouteFromAZ2": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "StackatoPrivateRouteTableAZ2"
+        },
+        "InstanceId": {
+          "Ref": "NATHostAZ2"
         }
       }
     },
@@ -1037,8 +1071,7 @@
         "IpProtocol": "-1",
         "SourceSecurityGroupId": {
           "Ref": "defaultSecurityGroup"
-        },
-        "SourceSecurityGroupOwnerId": "233211978703"
+        }
       }
     },
     "egress1": {

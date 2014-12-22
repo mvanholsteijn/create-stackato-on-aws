@@ -158,6 +158,7 @@ function getAllPrivateIPAddresses() {
 }
 
 function generateSSHConfig() {
+	echo "INFO: generating new ~/.ssh/config to ease ssh'ing into stack"
 	(
 	getHostTable | grep -v NAT | while read LINE; do
 		NAME=$(echo $LINE | awk '{print $1;}')
@@ -189,6 +190,7 @@ function generateSSHConfig() {
 }
 
 function generateAnsibleInventory() {
+	echo "INFO: generating Ansible inventory file from generated stack"
 	(
 	HOSTS=$(getHostTable | grep -v -e NAT  -e Bastion | awk '{print $1}')
 
@@ -231,6 +233,7 @@ function addKeyToKnownHosts() {
 
 function updateKnownHosts() {
 	
+	echo "INFO: updating ~/.ssh/known_hosts with hosts in generated stack"
 	if [ ! -f ~/.ssh/known_hosts.saved ] ; then
 		cp ~/.ssh/known_hosts{,.saved}
 		chmod 0700 ~/.ssh/known_hosts.saved
@@ -268,6 +271,7 @@ function updateKnownHosts() {
 
 function generateStackatoPassword() {
 	if [ ! -f $STACK_DIR/stackato-password.txt ] ; then
+		echo "INFO: generating new random password for stackato account"
 		openssl rand -base64 8 > $STACK_DIR/stackato-password.txt
 		chmod 0700 $STACK_DIR/stackato-password.txt
 	fi
@@ -286,18 +290,21 @@ function installSSHConfig() {
 		fi
 	fi
 	if [ $INSTALL -eq 1 ] ; then
+		echo "INFO: installing new ~/.ssh/config"
 		cp $STACK_DIR/sshconfig ~/.ssh/config
 	fi
 }
 
 function changeStackatoSudoer() {
+	echo "INFO: adding stackato to sudoers list with password."
 	generateStackatoPassword
 	ansible-playbook -i $STACK_DIR/hosts \
-		-e "{ \"stackato_password\" : \"$STACKATO_PASSWORD\" }" \
+		-e "{ \"admin_password\" : \"$STACKATO_PASSWORD\" }" \
 		ansible/sudo.yml
 }
 
 function initializeStackato() {
+	echo "INFO: initializing stackato configuration."
 	generateStackatoPassword
 	ansible-playbook -v -i $STACK_DIR/hosts \
  		-e "{
