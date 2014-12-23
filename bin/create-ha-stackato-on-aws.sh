@@ -329,6 +329,21 @@ function initializeStackato() {
 		ansible/stackato.yml
 }
 
+function showRequiredDnsEntries() {
+	DNSNAME=$(
+	aws --region $REGION \
+		elb describe-load-balancers | \
+		jq -r '.LoadBalancerDescriptions[] | [.DNSName,  .ListenerDescriptions[].Listener.SSLCertificateId ] | join("     ")' | \
+		grep "/$DOMAIN_NAME" | \
+		awk '{print $1}'
+	)
+	BASE=$(echo $DOMAIN_NAME | awk -F.  '{print $1}')
+
+	echo "INFO: Add the following entries to DNS"
+	echo	"*.$BASE	CNAME	$DOMAIN_NAME."
+	echo	"$BASE		CNAME	$DNSNAME."
+}
+
 parseCommandLine $@
 getOrGenerateCertificate
 createKeyPair
@@ -339,3 +354,4 @@ updateKnownHosts
 generateAnsibleInventory
 changeStackatoSudoer
 initializeStackato
+showRequiredDnsEntries

@@ -42,6 +42,6 @@
         - name: rename node
           shell: kato node rename  `ec2metadata --local-ipv4`.xip.io --no-restart && touch .rename.task.done creates=.rename.task.done
         - name: attach as router
-          shell: kato node attach -e router `ec2metadata --local-ipv4` && touch .attach.task.done creates=.attach.task.done
+          shell: kato node attach -e router 10.0.3.5 && touch .attach.task.done creates=.attach.task.done
         - name: attach as router
           shell: kato config set router2g prevent_x_spoofing false && touch .spoofing.task.done creates=.spoofing.task.done
