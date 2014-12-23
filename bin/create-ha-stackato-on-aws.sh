@@ -7,11 +7,13 @@ export STACK_DIR=stacks/
 export ORGANIZATION=
 export LICENSE=
 export EMAIL=
+export HIGH_AVAILABILITY=
+export NUMBER_OF_DEAS=1
 
 function parseCommandLine() {
-	USAGE="Usage: $(basename $0) -d domain-name -o organization -l license -u email [-r region] "
+	USAGE="Usage: $(basename $0) -d domain-name -o organization -l license -u email [-r region] [-n number of deas] [-h] "
 
-	while getopts "r:d:o:u:l:" OPT; do
+	while getopts "r:d:o:u:l:n:h" OPT; do
 		case $OPT in
 			u)
 				EMAIL=$OPTARG
@@ -29,6 +31,12 @@ function parseCommandLine() {
 				DOMAIN_NAME=$OPTARG
 				STACK_NAME=$(echo $DOMAIN_NAME | sed -e 's/[^a-zA-Z0-9]//g')
 				STACK_DIR=stacks/$STACK_NAME
+				;;
+			n)
+				NUMBER_OF_DEAS=$OPTARG
+				;;
+			h)
+				HIGH_AVAILABILITY=--multi-availability-zones
 				;;
 			\*)
 				echo $USAGE >&2
@@ -89,6 +97,11 @@ function getNumberOfInstancesWithoutPrivateIp() {
 }
 
 function createStack() {
+	python bin/render_template.py \
+		--template ./config/cloudformation.template.jinja \
+		--number-of-deas $NUMBER_OF_DEAS \
+		$HIGH_AVAILABILITY  > $STACK_DIR/cloudformation.template
+
 	export SSL_KEY_NAME STACK_NAME REGION
 	PARAMETERS=$(cat <<!
 [ { "ParameterKey": "SSLCertificateId", "ParameterValue": "$SSL_KEY_NAME", "UsePreviousValue": false },
@@ -104,7 +117,7 @@ function createStack() {
 	if [ -z "$STATUS" ] ; then
 		aws --region $REGION cloudformation create-stack \
 			--stack-name $STACK_NAME \
-			--template-body "$(cat config/cloudformation.template)" \
+			--template-body "$(cat $STACK_DIR/cloudformation.template)" \
 			--parameters $PARAMETERS \
 			--on-failure DO_NOTHING
 	else
