@@ -1,6 +1,6 @@
 dockerpaas
 ==========
-a private PaaS using Docker based upon CloudFoundy and Stackato
+a script to create a high available  private PaaS using Docker based upon Stackato and Amazon AwS. Stackato is a distribution of OpenSource CloudFoundry by ActiveState.
 
 Prerequisites
 --------------
