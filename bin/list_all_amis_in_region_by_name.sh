@@ -9,6 +9,12 @@ fi
 AMI_NAME=$1
 AWS_ACCOUNT=$2
 
+JQ_EXISTS=$(which jq)
+if [ -z "$JQ_EXISTS" ] ; then
+	echo "ERROR: jq is not installed or not in PATH. Please install jq (on MacOS: brew install jq)"
+	exit 1
+fi
+
 REGIONS="ap-northeast-1 ap-southeast-1 ap-southeast-2 eu-central-1 eu-west-1 sa-east-1 us-east-1 us-west-1 us-west-2"
 for REGION in $REGIONS; do
 	AMI_COUNT=0
