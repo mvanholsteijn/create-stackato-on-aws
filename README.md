@@ -21,7 +21,15 @@ The script has only been tested on MacOS, so if you find any platform specific i
 - checkout this repository 
 - move into the directory dockerpaas
 - now type:
--     bin/create-ha-stackato-on-aws.sh -d <DNS domain-name> -o <organization> -l <Stackato License> -u <admin email address> 
+``` bash
+    bin/create-ha-stackato-on-aws.sh \
+      -d <DNS domain-name> \
+      -o <organization> \
+      -l <Stackato License> \
+      -u <admin email address> 
+```
+
+When the script has completed, you need to add the DNS name to your DNS servers to point to the AWS Elastic LoadBalancer. The script will print out the required records.
 
 USAGE
 -----
