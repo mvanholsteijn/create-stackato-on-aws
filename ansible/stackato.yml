@@ -34,6 +34,8 @@
         tasks:
         - name: rename node
           shell: kato node rename  `ec2metadata --local-ipv4`.xip.io --no-restart && touch .rename.task.done creates=.rename.task.done
+        - name: set availability zone
+          shell: kato node availabilityzone `ec2metadata --availability-zone`  && touch .zone.task.done creates=.zone.task.done
         - name: attach as dea
           shell: kato node attach -e dea 10.0.3.5 && touch .attach.task.done creates=.attach.task.done
 
