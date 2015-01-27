@@ -357,6 +357,7 @@
         "InstanceType": { "Ref" : "NatInstanceType" },
         "KeyName": { "Ref" : "KeyName" },
         "Monitoring": "false",
+	"SourceDestCheck" : false,
         "Tags": [
           {
             "Key": "Name",
@@ -379,6 +380,9 @@
             "GroupSet": [
               {
                 "Ref": "defaultSecurityGroup"
+              },
+              {
+                "Ref": "AllowSSHFromBastionSecurityGroup"
               }
             ],
             "AssociatePublicIpAddress": "true"
@@ -396,6 +400,7 @@
         "InstanceType": { "Ref" : "NatInstanceType" },
         "KeyName": { "Ref" : "KeyName" },
         "Monitoring": "false",
+	"SourceDestCheck" : false,
         "Tags": [
           {
             "Key": "Name",
@@ -419,6 +424,9 @@
             "GroupSet": [
               {
                 "Ref": "defaultSecurityGroup"
+              },
+              {
+                "Ref": "AllowSSHFromBastionSecurityGroup"
               }
             ],
             "AssociatePublicIpAddress": "true"
@@ -436,7 +444,6 @@
         "InstanceType": { "Ref" : "BastionInstanceType" },
         "KeyName": { "Ref" : "KeyName" },
         "Monitoring": false,
-	"SourceDestCheck" : false,
         "Tags": [
           {
             "Key": "Name",
@@ -476,7 +483,6 @@
         "InstanceType": { "Ref" : "BastionInstanceType" },
         "KeyName": { "Ref" : "KeyName" },
         "Monitoring": false,
-	"SourceDestCheck" : false,
         "Tags": [
           {
             "Key": "Name",
