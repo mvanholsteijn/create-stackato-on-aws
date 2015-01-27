@@ -227,7 +227,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "public-az-1-route-table"
+            "Value": "public-route-table"
           }
         ]
       }
@@ -274,18 +274,6 @@
         }
       }
     },
-    "NATHostAZ1ip": {
-      "Type": "AWS::EC2::EIP",
-      "DependsOn": [
-        "Gateway1"
-      ],
-      "Properties": {
-        "Domain": "vpc",
-        "InstanceId": {
-          "Ref": "NATHostAZ1"
-        }
-      }
-    },
 {% if multi_az %}
     "BastionHostAZ2ip": {
       "Type": "AWS::EC2::EIP",
@@ -296,18 +284,6 @@
         "Domain": "vpc",
         "InstanceId": {
           "Ref": "BastionHostAZ2"
-        }
-      }
-    },
-    "NATHostAZ2ip": {
-      "Type": "AWS::EC2::EIP",
-      "DependsOn": [
-        "Gateway1"
-      ],
-      "Properties": {
-        "Domain": "vpc",
-        "InstanceId": {
-          "Ref": "NATHostAZ2"
         }
       }
     },
@@ -352,20 +328,22 @@
         ],
         "Listeners": [
           {
-            "InstancePort": "80",
-            "LoadBalancerPort": "80",
-            "Protocol": "HTTP",
-            "InstanceProtocol": "HTTP"
+            "LoadBalancerPort": "2222",
+            "InstancePort": "22",
+            "Protocol": "TCP",
+            "InstanceProtocol": "TCP"
           },
           {
+            "LoadBalancerPort": "80",
             "InstancePort": "80",
+            "Protocol": "TCP",
+            "InstanceProtocol": "TCP"
+          },
+          {
             "LoadBalancerPort": "443",
-            "Protocol": "HTTPS",
-            "InstanceProtocol": "HTTP",
-            "SSLCertificateId": { "Ref" : "SSLCertificateId" },
-            "PolicyNames": [
-              "ELBSecurityPolicy-2014-10"
-            ]
+            "InstancePort": "443",
+            "Protocol": "TCP",
+            "InstanceProtocol": "TCP"
           }
         ]
       }
@@ -382,7 +360,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "xcloud-nat-az-1"
+            "Value": "stackato-nat-az-1"
           }
         ],
         "NetworkInterfaces": [
@@ -402,7 +380,8 @@
               {
                 "Ref": "defaultSecurityGroup"
               }
-            ]
+            ],
+            "AssociatePublicIpAddress": "true"
           }
         ]
       }
@@ -420,7 +399,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "xcloud-nat-az-2"
+            "Value": "stackato-nat-az-2"
           }
         ],
         "NetworkInterfaces": [
@@ -441,7 +420,8 @@
               {
                 "Ref": "defaultSecurityGroup"
               }
-            ]
+            ],
+            "AssociatePublicIpAddress": "true"
           }
         ]
       }
@@ -455,7 +435,8 @@
                           { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "BastionInstanceType" }, "Arch" ] } ] },
         "InstanceType": { "Ref" : "BastionInstanceType" },
         "KeyName": { "Ref" : "KeyName" },
-        "Monitoring": "false",
+        "Monitoring": false,
+	"SourceDestCheck" : false,
         "Tags": [
           {
             "Key": "Name",
@@ -494,7 +475,8 @@
                           { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "BastionInstanceType" }, "Arch" ] } ] },
         "InstanceType": { "Ref" : "BastionInstanceType" },
         "KeyName": { "Ref" : "KeyName" },
-        "Monitoring": "false",
+        "Monitoring": false,
+	"SourceDestCheck" : false,
         "Tags": [
           {
             "Key": "Name",
@@ -669,7 +651,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "stackato-dea-az-{{dea}}"
+            "Value": "stackato-dea-{{dea}}-az-2"
           }
         ],
         "NetworkInterfaces": [
@@ -713,7 +695,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "stackato-dea-az-{{dea}}"
+            "Value": "stackato-dea-{{dea}}-az-2"
           }
         ],
         "NetworkInterfaces": [
@@ -803,6 +785,12 @@
             "IpProtocol": "tcp",
             "FromPort": "443",
             "ToPort": "443",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "2222",
+            "ToPort": "2222",
             "CidrIp": "0.0.0.0/0"
           }
         ],
